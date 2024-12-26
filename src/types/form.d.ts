@@ -13,5 +13,6 @@ export interface IFormItem {
     | "phone";
   label: string;
   options?: string[];
+  placeholder?: string;
   value?: any;
 }

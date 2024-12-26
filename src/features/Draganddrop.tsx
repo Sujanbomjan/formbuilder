@@ -51,7 +51,7 @@ const DragItem: React.FC<DragItemProps> = ({
   return (
     <div
       ref={ref}
-      className="mb-2 p-3 border rounded-md shadow-sm bg-gray-800 text-white cursor-move flex items-center justify-between"
+      className="mb-2 p-3 border rounded-md shadow-sm bg-gray-800 text-black cursor-move flex items-center justify-between"
     >
       <span>{item.label}</span>
       <Button variant="ghost" size="icon" onClick={onRemove}>

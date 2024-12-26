@@ -1,15 +1,21 @@
 import React from "react";
+import {
+  FormControl,
+  FormField as ShadcnFormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import {
   Select,
+  SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectContent,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import {
   InputOTP,
   InputOTPGroup,
@@ -21,44 +27,102 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { CalendarIcon } from "lucide-react";
-import { IFormItem } from "@/types/form"
 import { Button } from "@/components/ui/button";
-
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { IFormItem } from "@/types/form";
+import { useFormContext } from "react-hook-form";
 
 interface FormFieldProps {
-    item: IFormItem;
-    value: any;
-    onChange: (value: any) => void;
-  }
+  item: IFormItem;
+  name: string;
+}
 
-const FormField: React.FC<FormFieldProps> = ({ item, value, onChange }) => {
-    return (
-      <div key={item.id} className="mb-4">
-        <Label htmlFor={item.id} className="text-white mb-2 block">
-          {item.label}
-        </Label>
-        {item.type === "checkbox" && (
-          <Checkbox
-            id={item.id}
-            checked={value || false}
-            onCheckedChange={onChange}
-          />
-        )}
-        {item.type === "input" && (
+const FormField: React.FC<FormFieldProps> = ({ item, name }) => {
+  const { control, getValues, setValue } = useFormContext();
+
+  const renderField = () => {
+    switch (item.type) {
+      case "input":
+        return (
           <Input
-            id={item.id}
-            className="w-full"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
+            {...control.register(name)}
+            type={name === "password" ? "password" : "text"}
+            placeholder={item.placeholder}
           />
-        )}
-        {item.type === "inputOTP" && (
+        );
+      case "date":
+        return (
+          <Input
+            {...control.register(name)}
+            type="date"
+            placeholder={item.placeholder}
+          />
+        );
+
+      case "checkbox":
+        return (
+          <Checkbox
+            checked={getValues(name)}
+            onCheckedChange={(checked: any) => setValue(name, checked)}
+          />
+        );
+
+      case "select":
+        return (
+          <Select
+            value={getValues(name)}
+            onValueChange={(value: any) => setValue(name, value)}
+          >
+            <SelectTrigger>
+              <SelectValue
+                placeholder={item.placeholder || "Select an option"}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {item.options?.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+
+      case "datePicker":
+        return (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !getValues(name) && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {getValues(name)
+                  ? format(getValues(name), "PPP")
+                  : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={getValues(name)}
+                onSelect={(date) => setValue(name, date)}
+              />
+            </PopoverContent>
+          </Popover>
+        );
+
+      case "inputOTP":
+        return (
           <InputOTP
             maxLength={6}
-            onChange={onChange}
+            value={getValues(name)}
+            onChange={(value) => setValue(name, value)}
           >
             <InputOTPGroup>
               <InputOTPSlot index={0} />
@@ -72,76 +136,36 @@ const FormField: React.FC<FormFieldProps> = ({ item, value, onChange }) => {
               <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
-        )}
-         {item.type === "datePicker" && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-[280px] justify-start text-left font-normal",
-                  !value && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {value ? (
-                  format(new Date(value), "PPP")
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={value ? new Date(value) : undefined}
-                onSelect={(selectedDate) => {
-                  onChange(selectedDate);
-                }}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-        {item.type === "date" && (
+        );
+
+      case "file":
+        return (
           <Input
-            id={item.id}
-            type="date"
-            className="w-full"
-            value={value || ""}
-            onChange={(e) => onChange(e.target.value)}
-          />
-        )}
-        {item.type === "file" && (
-          <Input
-            id={item.id}
             type="file"
-            className="w-full"
-            onChange={(e) =>
-              onChange(e.target.files ? e.target.files : null)
-            }
+            onChange={(e) => {
+              setValue(name, e.target.files);
+            }}
           />
-        )}
-        {item.type === "select" && (
-          <Select
-            value={value}
-            onValueChange={onChange}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select an option" />
-            </SelectTrigger>
-            <SelectContent>
-              {item.options?.map((option, idx) => (
-                <SelectItem key={idx} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
-    );
+        );
+
+      default:
+        return null;
+    }
   };
-  
+
+  return (
+    <ShadcnFormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{item.label}</FormLabel>
+          <FormControl>{renderField()}</FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
 
 export default FormField;

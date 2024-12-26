@@ -12,7 +12,6 @@ interface DynamicFormBuilderProps {
 
 const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({ layout }) => {
   const [formItems, setFormItems] = useState<IFormItem[]>([]);
-  const [formData, setFormData] = useState<Record<string, any>>({});
   const [jsonOutput, setJsonOutput] = useState<string | null>(null);
 
   const addFormItem = (type: IFormItem["type"]) => {
@@ -32,17 +31,12 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({ layout }) => {
     setFormItems([...formItems, newItem]);
   };
 
-  const handleInputChange = (id: string, value: any) => {
-    setFormData({ ...formData, [id]: value });
-  };
-
   const handleFormItemsChange = (updatedItems: IFormItem[]) => {
     setFormItems(updatedItems);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setJsonOutput(JSON.stringify(formData, null, 2));
+  const handleSubmit = (data: any) => {
+    setJsonOutput(JSON.stringify(data, null, 2));
   };
 
   return (
@@ -51,7 +45,7 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({ layout }) => {
         className={`${
           layout === "default"
             ? "bg-white text-black"
-            : "bg-gray-900 text-white"
+            : "bg-gray-900 text-black"
         } flex h-screen w-screen justify-between flex-row p-4`}
       >
         {/* Sidebar */}
@@ -79,18 +73,18 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({ layout }) => {
           className={`${
             layout === "default" ? "w-2/4" : "w-3/5 bg-gray-700"
           } p-4`}
-        >
-          <h3
-            className={`${
-              layout === "default"
-                ? "text-lg font-medium"
-                : "text-xl font-bold text-yellow-400"
-            } mb-4`}
-          >
-            {layout === "default"
-              ? "Drag and Drop Your Fields"
-              : "Customize Your Form Layout"}
-          </h3>
+        ><h3
+        className={`${
+          layout === "default"
+            ? "text-lg font-medium"
+            : "text-xl font-bold text-yellow-400"
+        } mb-4`}
+      >
+        {layout === "default"
+          ? "Drag and Drop Your Fields"
+          : "Customize Your Form Layout"}
+      </h3>
+
           <DragAndDropArea
             formItems={formItems}
             onFormItemsChange={handleFormItemsChange}
@@ -116,8 +110,6 @@ const DynamicFormBuilder: React.FC<DynamicFormBuilderProps> = ({ layout }) => {
           </h3>
           <FormPreview
             formItems={formItems}
-            formData={formData}
-            onInputChange={handleInputChange}
             onSubmit={handleSubmit}
             jsonOutput={jsonOutput}
           />

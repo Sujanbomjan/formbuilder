@@ -2,15 +2,24 @@
 import React, { createContext, useContext, useState } from "react";
 
 type LayoutType = "default" | "custom";
-const LayoutContext = createContext<{
+
+interface LayoutContextType {
   layout: LayoutType;
   setLayout: (layout: LayoutType) => void;
-}>({
+}
+
+const LayoutContext = createContext<LayoutContextType>({
   layout: "default",
   setLayout: () => {},
 });
 
-export const useLayout = () => useContext(LayoutContext);
+export const useLayout = () => {
+  const context = useContext(LayoutContext);
+  if (!context) {
+    throw new Error("useLayout must be used within a LayoutProvider");
+  }
+  return context;
+};
 
 export const LayoutProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
