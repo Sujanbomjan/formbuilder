@@ -1,5 +1,5 @@
 "use client";
-import { useLayout } from "@/app/layout";
+import { useLayout } from "@/context/LayoutContext";
 import DynamicFormBuilder from "@/features/FormBuilder";
 
 export default function Home() {
