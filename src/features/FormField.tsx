@@ -157,7 +157,7 @@ const FormField: React.FC<FormFieldProps> = ({ item, name }) => {
     <ShadcnFormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({}) => (
         <FormItem>
           <FormLabel>{item.label}</FormLabel>
           <FormControl>{renderField()}</FormControl>
