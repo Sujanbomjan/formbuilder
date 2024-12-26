@@ -13,6 +13,7 @@ A modern, powerful drag-and-drop form builder application that empowers users to
 *   **Two Layout Modes:** Supports "default" and "custom" layout modes with distinct styling.
 *   **Live Form Preview:**  View a real-time preview of your form as you build it.
 *   **JSON Output:** Generates a JSON representation of the form data upon submission.
+*   **Code Generation:** Generates reusable and functional React component code based on the configured form.
 *   **Customizable Form Element Labels:** Each form element can be given a specific label.
 *   **Data Validation:** Uses `zod` for schema definition and form validation.
 
